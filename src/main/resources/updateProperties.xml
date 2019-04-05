@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pdpPropertiesUpdate xmlns="http://authzforce.github.io/rest-api-model/xmlns/authz/5">
+  <feature type="urn:ow2:authzforce:feature-type:pdp:core" enabled="true"
+    >urn:ow2:authzforce:feature:pdp:core:xpath-eval</feature>
+  <!-- GeoXACML data type -->
+  <feature type="urn:ow2:authzforce:feature-type:pdp:data-type" enabled="true"
+    >urn:ogc:def:dataType:geoxacml:1.0:geometry</feature>
+  <!-- GeoXACML Topological Functions -->
+  <feature type="urn:ow2:authzforce:feature-type:pdp:function" enabled="true"
+    >urn:ogc:def:function:geoxacml:1.0:geometry-equals</feature>
+  <feature type="urn:ow2:authzforce:feature-type:pdp:function" enabled="true"
+    >urn:ogc:def:function:geoxacml:1.0:geometry-disjoint</feature>
+  <feature type="urn:ow2:authzforce:feature-type:pdp:function" enabled="true"
+    >urn:ogc:def:function:geoxacml:1.0:geometry-touches</feature> 
+  <feature type="urn:ow2:authzforce:feature-type:pdp:function" enabled="true"
+    >urn:ogc:def:function:geoxacml:1.0:geometry-crosses</feature> 
+  <feature type="urn:ow2:authzforce:feature-type:pdp:function" enabled="true"
+    >urn:ogc:def:function:geoxacml:1.0:geometry-within</feature>
+  <feature type="urn:ow2:authzforce:feature-type:pdp:function" enabled="true"
+    >urn:ogc:def:function:geoxacml:1.0:geometry-contains</feature>
+  <feature type="urn:ow2:authzforce:feature-type:pdp:function" enabled="true"
+    >urn:ogc:def:function:geoxacml:1.0:geometry-overlaps</feature>
+  <feature type="urn:ow2:authzforce:feature-type:pdp:function" enabled="true"
+    >urn:ogc:def:function:geoxacml:1.0:geometry-intersects</feature>
+  <!-- GeoXACML Bag Functions --> 
+  <feature type="urn:ow2:authzforce:feature-type:pdp:function" enabled="true"
+    >urn:ogc:def:function:geoxacml:1.0:geometry-one-and-only</feature>
+  <feature type="urn:ow2:authzforce:feature-type:pdp:function" enabled="true"
+    >urn:ogc:def:function:geoxacml:1.0:geometry-bag-size</feature>
+  <feature type="urn:ow2:authzforce:feature-type:pdp:function" enabled="true"
+    >urn:ogc:def:function:geoxacml:1.0:geometry-is-in</feature>
+  <feature type="urn:ow2:authzforce:feature-type:pdp:function" enabled="true"
+    >urn:ogc:def:function:geoxacml:1.0:geometry-bag</feature>  
+  <feature type="urn:ow2:authzforce:feature-type:pdp:function" enabled="true"
+    >urn:ogc:def:function:geoxacml:1.0:geometry-bag-intersection</feature>
+  <feature type="urn:ow2:authzforce:feature-type:pdp:function" enabled="true"
+    >urn:ogc:def:function:geoxacml:1.0:geometry-bag-at-least-one-member-of</feature>
+  <feature type="urn:ow2:authzforce:feature-type:pdp:function" enabled="true"
+    >urn:ogc:def:function:geoxacml:1.0:geometry-bag-union</feature>
+  <feature type="urn:ow2:authzforce:feature-type:pdp:function" enabled="true"
+    >urn:ogc:def:function:geoxacml:1.0:geometry-bag-subset</feature>
+  <!-- GeoXACML Set Functions -->
+  <feature type="urn:ow2:authzforce:feature-type:pdp:function" enabled="true"
+    >urn:ogc:def:function:geoxacml:1.0:geometry-set-equals</feature>
+  <!-- PDP default policy that can be updated later -->
+   <rootPolicyRefExpression>root</rootPolicyRefExpression>
+</pdpPropertiesUpdate>
