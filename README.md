@@ -9,7 +9,9 @@ FIWARE AuthZForce is the project of a comprehensive XACML 3 open source implemen
 The implementation can be deployed as an extension to the FIWARE AuthZForce PDP and therefore leverages the XACML 3 syntax for policies, request and response messages. Until the final release of the [GeoXACML 3 Implementation Standard ](https://portal.opengeospatial.org/files/?artifact_id=55231), which currently is a draft OGC standard, this implementation implements the GeoXACML 1.0 datatype and functions from the BASIC Conformance Class based on XACML 3.
 
 ## About this implementation
-The community version implements all GeoXACML functions from the [GeoXACML 1.0 standard, conformance class BASIC as defined in Annex A](http://portal.opengeospatial.org/files/?artifact_id=42734)
+The license for this implementation is Apache 2. The licensing on the dependencies can be reviewed by opening `site/dependencies.html` in your favorite Web Browser.
+
+This implementation supports all GeoXACML functions from the [GeoXACML 1.0 standard, conformance class BASIC as defined in Annex A](http://portal.opengeospatial.org/files/?artifact_id=42734)
 
 This implementation does not undertake geometry transformation. Each function requires that both geometries can be compared. The decision is true iff both geometries are based on (i) the same datum and (ii) the same ellipsoid for geodetic CRSs and on the same CRSID for projected CRSs. 
 
