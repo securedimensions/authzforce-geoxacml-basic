@@ -30,6 +30,7 @@ Therefore, this implementation applies the axes order as defined below:
 | EPSG:4326                             | 4326 | LAT/LON    |
 | urn:ogc:def:crs:OGC::EPSG:4326        | 4326 | LAT/LON    |
 | http://www.opengis.net/def/crs/EPSG/0/4326       | 4326 | LAT/LON    |
+
 *GeoXACML implementation and axes order for CRS identifiers*
 
 This implementation uses `urn:ogc:def:crs:OGC::EPSG:<code>` and `http://www.opengis.net/def/crs/EPSG/0/<code>` as aliases for `EPSG:<code>`.
@@ -46,6 +47,7 @@ This implementation uses `urn:ogc:def:crs:OGC::EPSG:<code>` and `http://www.open
 | `CRS=urn:ogc:def:crs:OGC:EPSG:4326;POINT(38.889444 -77.035278)`    | EWKT | LAT/LON |
 | `CRS=urn:ogc:def:crs:OGC:CRS84;POINT(-77.035278 38.889444)`    | EWKT | LON/LAT |
 | `CRS=WGS84;POINT(-77.035278 38.889444)`    | EWKT | LON/LAT |
+
 *WKT and EWKT encoding examples with resulting axes order*
 
 
@@ -65,6 +67,7 @@ urn:ogc:def:dataType:geoxacml:1.0:geometry
 The GeoXACML 1.0 standard defines the following functions that are implemented:
 
 |Function URN|
+|:-|
 |urn:ogc:def:function:geoxacml:1.0:geometry-equals|
 |urn:ogc:def:function:geoxacml:1.0:geometry-disjoint|
 |urn:ogc:def:function:geoxacml:1.0:geometry-touches|
@@ -81,7 +84,7 @@ The GeoXACML 1.0 standard defines the following functions that are implemented:
 |urn:ogc:def:function:geoxacml:1.0:geometry-bag-at-least-one-member-of|
 |urn:ogc:def:function:geoxacml:1.0:geometry-bag-union|
 |urn:ogc:def:function:geoxacml:1.0:geometry-bag-subset|
-urn:ogc:def:function:geoxacml:1.0:geometry-set-equals|
+|urn:ogc:def:function:geoxacml:1.0:geometry-set-equals|
 
 The functions on bags and sets inherited from XACML do **not** use the `urn:ogc:def:function:geoxacml:1.0:geometry-equals` function, which means topologically equals. Instead, the equals function used for bag and set functions uses **exact** equality which means that each coordinate of the geometries must be identical order and value.
 
@@ -322,6 +325,7 @@ This implementation also supports a simplified representation of a Null geometry
 **Important: The implementation does not store a reason for null when using the WKT encoding as this is cannot be specified**
 
 |Function URN| Result if one o both geometries are NULL or EMPTY|
+|:-|:-|
 |urn:ogc:def:function:geoxacml:1.0:geometry-equals| FALSE |
 |urn:ogc:def:function:geoxacml:1.0:geometry-disjoint| TRUE |
 |urn:ogc:def:function:geoxacml:1.0:geometry-touches| FALSE |
@@ -338,7 +342,7 @@ This implementation also supports a simplified representation of a Null geometry
 |urn:ogc:def:function:geoxacml:1.0:geometry-bag-at-least-one-member-of| FALSE |
 |urn:ogc:def:function:geoxacml:1.0:geometry-bag-union| FALSE |
 |urn:ogc:def:function:geoxacml:1.0:geometry-bag-subset| FALSE |
-urn:ogc:def:function:geoxacml:1.0:geometry-set-equals| FALSE |
+|urn:ogc:def:function:geoxacml:1.0:geometry-set-equals| FALSE |
 
 
 ### WKT encoding for Null geometry
