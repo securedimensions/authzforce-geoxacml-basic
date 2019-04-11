@@ -9,7 +9,7 @@ Part of the install procedure is also that the dependency libraries are all copi
 This implementation compiles as a JAR file which can be used as an extension to the FIWARE AUTHZFORCE PDP.
 
 ### Install the AUTHZFORCE CE SERVER
-Please follow the descriptions form the [AUTHZFORCE CE SERVER installation](https://authzforce-ce-fiware.readthedocs.io/en/latest/InstallationAndAdministrationGuide.html) to install the AUTHZFORCE CE SERVER using the `DIST` package.
+Please follow the descriptions form the [AUTHZFORCE CE SERVER installation](https://authzforce-ce-fiware.readthedocs.io/en/latest/InstallationAndAdministrationGuide.html) to install the AUTHZFORCE CE SERVER using the `DIST` package. *Note: This GeoXACML implementation was tested successfully with AUTZFORCE CE SERVER version 8.1.0.*
 
 ### Deploy the GeoXACML AUTHZFORE PDP extension
 Copy from the `target` directory the file `authzforce-geoxacml-basic-<version>.jar` into the FIWARE AUTHZFORCE CE SERVER directory `webapps/WEB-INF/lib`.
@@ -20,6 +20,7 @@ Copy from the `target/lib` directory the following files into the FIWARE AUTHZFO
 * jts-core-1.16.0.jar
 * jts-io-common-1.16.0.jar
 * log4j-1.2.17.jar
+* slf4j-log4j12-1.7.25.jar
 
 Then restart the AUTHZFORCE CE SERVER. E.g. `service tomcat8 restart`.
 
