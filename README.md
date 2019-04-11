@@ -8,7 +8,12 @@ FIWARE AuthZForce is the project of a comprehensive XACML 3 open source implemen
 
 The implementation can be deployed as an extension to the FIWARE AuthZForce PDP and therefore leverages the XACML 3 syntax for policies, request and response messages. Until the final release of the [GeoXACML 3 Implementation Standard ](https://portal.opengeospatial.org/files/?artifact_id=55231), which currently is a draft OGC standard, this implementation implements the GeoXACML 1.0 datatype and functions from the BASIC Conformance Class based on XACML 3.
 
-## About this implementation
+The Open Geospatial Consortium [GeoXACML 1.0 standard](http://www.opengeospatial.org/standards/geoxacml) defines two implementation options via a so called `BASIC` and `STANDARD` conformance class.
+Secure Dimensions offers support for the functionality outlined in both conformance classes. The implementation of the `BASIC` conformance class is available for free - this implementation.
+
+In case you are interested in the `STANDARD` implementation, please contact us at [support@secure-dimensions.de](mailto:support@secure-dimensions.de).
+
+## About this BASIC implementation
 The license for this implementation is Apache 2. The licensing on the dependencies can be reviewed by opening `site/dependencies.html` in your favorite Web Browser.
 
 This implementation supports all GeoXACML functions from the [GeoXACML 1.0 standard, conformance class BASIC as defined in Annex A](http://portal.opengeospatial.org/files/?artifact_id=42734)
@@ -17,6 +22,50 @@ This implementation does not undertake geometry transformation. Each function re
 
 This implementation uses - in compliance with the [EPSG Registry] (https://www.epsg-registry.org/) - the LAT/LON axes order for the CRS identified by the string "EPSG:4326". In other words, if a geometry encoding references "EPSG:4326" as the CRS, then the axes order on the coordinates SHALL be **Lat/Lon**.
 Please see section "Axes Order Confusion" below for more details.
+
+## About the STANDARD implementation
+Secure Dimensions offers a full GeoXACML implementation as standardized in [GeoXACML 1.0 standard, conformance class STANDARD as defined in Annex A](http://portal.opengeospatial.org/files/?artifact_id=42734). The implementation does support dynamic geometry transformation to enable the `constructive` and `geometric` functions.
+
+The STANDARD implementation enables the following functions on the dataype `Geometry`:
+
+|Function URN|
+|:-|
+|urn:ogc:def:function:geoxacml:1.0:geometry-equals|
+|urn:ogc:def:function:geoxacml:1.0:geometry-disjoint|
+|urn:ogc:def:function:geoxacml:1.0:geometry-touches|
+|urn:ogc:def:function:geoxacml:1.0:geometry-crosses|
+|urn:ogc:def:function:geoxacml:1.0:geometry-within|
+|urn:ogc:def:function:geoxacml:1.0:geometry-contains|
+|urn:ogc:def:function:geoxacml:1.0:geometry-overlaps|
+|urn:ogc:def:function:geoxacml:1.0:geometry-intersects|
+|urn:ogc:def:function:geoxacml:1.0:geometry-one-and-only|
+|urn:ogc:def:function:geoxacml:1.0:geometry-bag-size|
+|urn:ogc:def:function:geoxacml:1.0:geometry-is-in|
+|urn:ogc:def:function:geoxacml:1.0:geometry-bag|
+|urn:ogc:def:function:geoxacml:1.0:geometry-bag-intersection|
+|urn:ogc:def:function:geoxacml:1.0:geometry-bag-at-least-one-member-of|
+|urn:ogc:def:function:geoxacml:1.0:geometry-bag-union|
+|urn:ogc:def:function:geoxacml:1.0:geometry-bag-subset|
+|urn:ogc:def:function:geoxacml:1.0:geometry-set-equals|
+|urn:ogc:def:function:geoxacml:1.0:geometry-buffer|
+|urn:ogc:def:function:geoxacml:1.0:geometry-boundary|
+|urn:ogc:def:function:geoxacml:1.0:geometry-convex-hull|
+|urn:ogc:def:function:geoxacml:1.0:geometry-centroid|
+|urn:ogc:def:function:geoxacml:1.0:geometry-difference|
+|urn:ogc:def:function:geoxacml:1.0:geometry-sym-difference|
+|urn:ogc:def:function:geoxacml:1.0:geometry-intersection|
+|urn:ogc:def:function:geoxacml:1.0:geometry-union|
+|urn:ogc:def:function:geoxacml:1.0:geometry-area|
+|urn:ogc:def:function:geoxacml:1.0:geometry-distance|
+|urn:ogc:def:function:geoxacml:1.0:geometry-is-within-distance|
+|urn:ogc:def:function:geoxacml:1.0:geometry-length|
+|urn:ogc:def:function:geoxacml:1.0:geometry-is-simple|
+|urn:ogc:def:function:geoxacml:1.0:geometry-is-closed|
+|urn:ogc:def:function:geoxacml:1.0:geometry-is-valid|
+|urn:ogc:def:function:geoxacml:1.0:convert-to-metre|
+|urn:ogc:def:function:geoxacml:1.0:convert-to-square-metre|
+
+
 
 ## Axes Order Confusion
 This implementation must be able to derive access control decisions based on geometries encoded by potentially different people and organizations. Usually, a policy editor would create geometry based conditions using the WKT (Well Known Text) or EWKT (Extended Well Known Text) encodings. Then during runtime, a PEP (Policy Enforcement Point) - or any other software - would send Authorization Decision Requests to the GeoPDP. If at this point, the editor of the policy and the implementer of the PEP had used different axes order for the same CRS identifier, then the PDP consequently will derive a wrong access control decision! Important to note is that the GeoPDP has no option to determine the different axes order use.
