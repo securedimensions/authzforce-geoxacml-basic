@@ -3,8 +3,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.securedimensions.geoxacml</groupId>
 	<artifactId>authzforce-geoxacml-basic</artifactId>
-	<version>0.4</version>
-	<name>authzforce-geoxacml-basic-0.4.jar</name>
+	<version>0.4.1</version>
+	<name>authzforce-geoxacml-basic-0.4.1.jar</name>
 	<description>GeoXACML Basic Implementation</description>
 	<organization>
 		<name>Secure Dimensions GmbH</name>
@@ -37,15 +37,16 @@
 			<version>10.3</version>
 		</dependency>
 		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.17</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.7.25</version>
-		</dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.2.3</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.30</version>
+        </dependency>
 	</dependencies>
 	<build>
 		<plugins>

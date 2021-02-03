@@ -1,5 +1,5 @@
 # Build and Install
-This GeoXACML Basic implementation can be used as an additional JAR file with the FIWARE AUTHZFORE CE SERVER. The deployment of the `authzforce-geoxacml-basic-<version>.jar` file will enable the functionality available as defined in the [GeoXACML 1.0 BASIC conformance class, Annex A](http://portal.opengeospatial.org/files/?artifact_id=42734). The MAVEN pom.xml compiles for a Java 11 target, because the AUTHZFORCE CE SERVER 9.0.0 updated to Java 11.
+This GeoXACML Basic implementation can be used as an additional JAR file with the FIWARE AUTHZFORE CE SERVER. The deployment of the `authzforce-geoxacml-basic-<version>.jar` file will enable the functionality available as defined in the [GeoXACML 1.0 BASIC conformance class, Annex A](http://portal.opengeospatial.org/files/?artifact_id=42734). The MAVEN pom.xml compiles for a Java 11 target.
 
 # Build the GeoXACML extension
 Clone this repository and run `mvn install`. This generates the `authzforce-geoxacml-basic-0.4.jar` in `target` directory.
@@ -9,7 +9,7 @@ Part of the install procedure is also that the dependency libraries are all copi
 This implementation compiles as a JAR file which can be used as an extension to the FIWARE AUTHZFORCE PDP.
 
 ### Install the AUTHZFORCE CE SERVER
-Please follow the descriptions form the [AUTHZFORCE CE SERVER installation](https://authzforce-ce-fiware.readthedocs.io/en/latest/InstallationAndAdministrationGuide.html) to install the AUTHZFORCE CE SERVER using the `DIST` package. *Note: This GeoXACML implementation was tested successfully with AUTZFORCE CE SERVER version 16.0.0.*
+Please follow the descriptions form the [AUTHZFORCE CE SERVER installation](https://authzforce-ce-fiware.readthedocs.io/en/latest/InstallationAndAdministrationGuide.html) to install the AUTHZFORCE CE SERVER using the `DIST` package. *Note: This GeoXACML implementation was tested successfully with AUTZFORCE CE SERVER version 9.0.1.*
 
 ### Deploy the GeoXACML AUTHZFORE PDP extension
 Copy from the `target` directory the file `authzforce-geoxacml-basic-<version>.jar` into the FIWARE AUTHZFORCE CE SERVER directory `webapps/WEB-INF/lib`.
@@ -19,8 +19,6 @@ Copy from the `target/lib` directory the following files into the FIWARE AUTHZFO
 * jts2geojson-0.14.3.jar
 * jts-core-1.18.0.jar
 * jts-io-common-1.18.0.jar
-* log4j-1.2.17.jar
-* slf4j-log4j12-1.7.25.jar
 
 Then restart the AUTHZFORCE CE SERVER. E.g. `service tomcat9 restart`.
 

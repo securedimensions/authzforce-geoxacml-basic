@@ -18,12 +18,14 @@
 
 package de.securedimensions.geoxacml.function;
 
-import org.apache.log4j.Category;
 import org.ow2.authzforce.core.pdp.api.func.FirstOrderBagFunctions;
 import org.ow2.authzforce.core.pdp.api.value.AttributeDatatype;
 import org.ow2.authzforce.core.pdp.api.value.AttributeValue;
 import org.ow2.authzforce.core.pdp.api.value.Bag;
 import org.ow2.authzforce.core.pdp.api.value.BagDatatype;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.securedimensions.geoxacml.datatype.GeometryValue;
 
 /**
@@ -33,6 +35,8 @@ import de.securedimensions.geoxacml.datatype.GeometryValue;
  */
 
 public class BagSetFunctions {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(GeometryValue.class);
 
 	public static final AttributeDatatype<GeometryValue> DATATYPEX = 
 			new AttributeDatatype<GeometryValue>(GeometryValue.class, "urn:ogc:def:dataType:geoxacml:1.0:geometry", "urn:ogc:def:function:geoxacml:1.0:geometry-bag");
@@ -91,7 +95,7 @@ public class BagSetFunctions {
 
 		public static <V extends AttributeValue> boolean eval(final V arg0, final Bag<V> bag)
 		{
-			Category.getRoot().debug("eval function for Geometry datatype");
+			LOGGER.debug("eval function for Geometry datatype");
 			return bag.contains(arg0);
 		}
 
