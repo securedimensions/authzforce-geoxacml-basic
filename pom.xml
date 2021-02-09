@@ -17,6 +17,11 @@
 			<version>17.0.0</version>
 		</dependency>
 		<dependency>
+	        <groupId>org.ow2.authzforce</groupId>
+	        <artifactId>authzforce-ce-core-pdp-io-xacml-json</artifactId>
+	        <version>17.0.0</version>
+	    </dependency>
+		<dependency>
 			<groupId>org.wololo</groupId>
 			<artifactId>jts2geojson</artifactId>
 			<version>0.14.3</version>
