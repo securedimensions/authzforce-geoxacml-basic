@@ -2,7 +2,7 @@
 This GeoXACML Basic implementation can be used as an additional JAR file with the FIWARE AUTHZFORE CE SERVER. The deployment of the `authzforce-geoxacml-basic-<version>.jar` file will enable the functionality available as defined in the [GeoXACML 1.0 BASIC conformance class, Annex A](http://portal.opengeospatial.org/files/?artifact_id=42734). The MAVEN pom.xml compiles for a Java 11 target.
 
 # Build the GeoXACML extension
-Clone this repository and run `mvn install`. This generates the `authzforce-geoxacml-basic-0.4.jar` in `target` directory.
+Clone this repository and run `mvn install`. This generates the `authzforce-geoxacml-basic-<version>.jar` in `target` directory.
 Part of the install procedure is also that the dependency libraries are all copied into the `target/lib` directory.
 
 ## Installation
