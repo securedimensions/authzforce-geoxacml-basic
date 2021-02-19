@@ -23,6 +23,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -117,6 +118,13 @@ public final class GeometryValue extends SimpleValue<Geometry>
 			tf = TransformerFactory.newInstance();
 		}
 				
+		public GeometryValue getInstance(Collection<Geometry> geometries)
+		{
+			LOGGER.debug("getInstance(Array<Geometry>)");
+			
+			return new GeometryValue(gf.buildGeometry(geometries));
+		}
+		
 		public GeometryValue getInstance(Serializable value, Map<QName, String> otherXmlAttributes,
 				XPathCompiler xPathCompiler) 
 		{

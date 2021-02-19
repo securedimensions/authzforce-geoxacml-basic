@@ -386,11 +386,11 @@ public final class TopologicalFunctions {
 		}
 	}
 	
-	public final static class Relates extends SingleParameterTypedFirstOrderFunction<StringValue, GeometryValue>
+	public final static class RelateMatrix extends SingleParameterTypedFirstOrderFunction<StringValue, GeometryValue>
 	{
-		public static final String ID = "urn:ogc:def:function:geoxacml:3.0:geometry-relates";
+		public static final String ID = "urn:ogc:def:function:geoxacml:3.0:geometry-relate-matrix";
 
-		public Relates()
+		public RelateMatrix()
 		{
 			super(ID, StandardDatatypes.STRING, true, Arrays.asList(GeometryValue.DATATYPE));
 		}

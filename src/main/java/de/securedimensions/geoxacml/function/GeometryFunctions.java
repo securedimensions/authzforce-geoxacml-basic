@@ -31,6 +31,7 @@ import org.ow2.authzforce.core.pdp.api.func.SingleParameterTypedFirstOrderFuncti
 import org.ow2.authzforce.core.pdp.api.func.BaseFirstOrderFunctionCall.EagerSinglePrimitiveTypeEval;
 import org.ow2.authzforce.core.pdp.api.value.BooleanValue;
 import org.ow2.authzforce.core.pdp.api.value.Datatype;
+import org.ow2.authzforce.core.pdp.api.value.IntegerValue;
 import org.ow2.authzforce.core.pdp.api.value.StandardDatatypes;
 import org.ow2.authzforce.core.pdp.api.value.StringValue;
 import org.ow2.authzforce.xacml.identifiers.XacmlStatusCode;
@@ -50,11 +51,11 @@ public class GeometryFunctions {
 
 	}
 
-	public final static class FromString extends SingleParameterTypedFirstOrderFunction<GeometryValue, StringValue>
+	public final static class GeometryFromString extends SingleParameterTypedFirstOrderFunction<GeometryValue, StringValue>
 	{
 		public static final String ID = "urn:ogc:def:function:geoxacml:3.0:geometry-from-string";
 
-		public FromString()
+		public GeometryFromString()
 		{
 			super(ID, GeometryValue.DATATYPE, true, Arrays.asList(StandardDatatypes.STRING));
 		}
@@ -249,6 +250,136 @@ public class GeometryFunctions {
 		}
 	}
 	
+	public final static class Dimension extends SingleParameterTypedFirstOrderFunction<IntegerValue, GeometryValue>
+	{
+		public static final String ID = "urn:ogc:def:function:geoxacml:3.0:geometry-dimension";
+
+		public Dimension()
+		{
+			super(ID, StandardDatatypes.INTEGER, true, Arrays.asList(GeometryValue.DATATYPE));
+		}
+
+		@Override
+		public FirstOrderFunctionCall<IntegerValue> newCall(final List<Expression<?>> argExpressions, final Datatype<?>... remainingArgTypes)
+		{
+
+			return new EagerSinglePrimitiveTypeEval<IntegerValue, GeometryValue>(functionSignature, argExpressions, remainingArgTypes)
+			{
+
+				@Override
+				protected IntegerValue evaluate(final Deque<GeometryValue> args) throws IndeterminateEvaluationException
+				{
+					return IntegerValue.valueOf(args.poll().getUnderlyingValue().getDimension());
+				}
+
+			};
+		}
+	}
+
+	public final static class GeometryType extends SingleParameterTypedFirstOrderFunction<StringValue, GeometryValue>
+	{
+		public static final String ID = "urn:ogc:def:function:geoxacml:3.0:geometry-type";
+
+		public GeometryType()
+		{
+			super(ID, StandardDatatypes.STRING, true, Arrays.asList(GeometryValue.DATATYPE));
+		}
+
+		@Override
+		public FirstOrderFunctionCall<StringValue> newCall(final List<Expression<?>> argExpressions, final Datatype<?>... remainingArgTypes)
+		{
+
+			return new EagerSinglePrimitiveTypeEval<StringValue, GeometryValue>(functionSignature, argExpressions, remainingArgTypes)
+			{
+
+				@Override
+				protected StringValue evaluate(final Deque<GeometryValue> args) throws IndeterminateEvaluationException
+				{
+					return new StringValue(args.poll().getUnderlyingValue().getGeometryType());
+				}
+
+			};
+		}
+	}
+
+	public final static class SRS extends SingleParameterTypedFirstOrderFunction<StringValue, GeometryValue>
+	{
+		public static final String ID = "urn:ogc:def:function:geoxacml:3.0:geometry-srs";
+
+		public SRS()
+		{
+			super(ID, StandardDatatypes.STRING, true, Arrays.asList(GeometryValue.DATATYPE));
+		}
+
+		@Override
+		public FirstOrderFunctionCall<StringValue> newCall(final List<Expression<?>> argExpressions, final Datatype<?>... remainingArgTypes)
+		{
+
+			return new EagerSinglePrimitiveTypeEval<StringValue, GeometryValue>(functionSignature, argExpressions, remainingArgTypes)
+			{
+
+				@Override
+				protected StringValue evaluate(final Deque<GeometryValue> args) throws IndeterminateEvaluationException
+				{
+					GeometryMetadata gm = (GeometryMetadata)args.poll().getUnderlyingValue().getUserData();
+					return new StringValue(gm.getSRS());
+				}
+
+			};
+		}
+	}
+
+	public final static class SRID extends SingleParameterTypedFirstOrderFunction<IntegerValue, GeometryValue>
+	{
+		public static final String ID = "urn:ogc:def:function:geoxacml:3.0:geometry-dimension";
+
+		public SRID()
+		{
+			super(ID, StandardDatatypes.INTEGER, true, Arrays.asList(GeometryValue.DATATYPE));
+		}
+
+		@Override
+		public FirstOrderFunctionCall<IntegerValue> newCall(final List<Expression<?>> argExpressions, final Datatype<?>... remainingArgTypes)
+		{
+
+			return new EagerSinglePrimitiveTypeEval<IntegerValue, GeometryValue>(functionSignature, argExpressions, remainingArgTypes)
+			{
+
+				@Override
+				protected IntegerValue evaluate(final Deque<GeometryValue> args) throws IndeterminateEvaluationException
+				{
+					return IntegerValue.valueOf(args.poll().getUnderlyingValue().getSRID());
+				}
+
+			};
+		}
+	}
+
+	public final static class AsText extends SingleParameterTypedFirstOrderFunction<StringValue, GeometryValue>
+	{
+		public static final String ID = "urn:ogc:def:function:geoxacml:3.0:geometry-as-text";
+
+		public AsText()
+		{
+			super(ID, StandardDatatypes.STRING, true, Arrays.asList(GeometryValue.DATATYPE));
+		}
+
+		@Override
+		public FirstOrderFunctionCall<StringValue> newCall(final List<Expression<?>> argExpressions, final Datatype<?>... remainingArgTypes)
+		{
+
+			return new EagerSinglePrimitiveTypeEval<StringValue, GeometryValue>(functionSignature, argExpressions, remainingArgTypes)
+			{
+
+				@Override
+				protected StringValue evaluate(final Deque<GeometryValue> args) throws IndeterminateEvaluationException
+				{
+					return new StringValue(args.poll().toString());
+				}
+
+			};
+		}
+	}
 
 
 }

@@ -5,8 +5,13 @@ de.securedimensions.geoxacml.function.GeometryFunctions$IsEmpty
 de.securedimensions.geoxacml.function.GeometryFunctions$IsClosed
 de.securedimensions.geoxacml.function.GeometryFunctions$IsRectangle
 de.securedimensions.geoxacml.function.GeometryFunctions$IsNull
-de.securedimensions.geoxacml.function.GeometryFunctions$FromString
-de.securedimensions.geoxacml.function.TopologicalFunctions$Relates
+de.securedimensions.geoxacml.function.GeometryFunctions$GeometryFromString
+de.securedimensions.geoxacml.function.GeometryFunctions$Dimension
+de.securedimensions.geoxacml.function.GeometryFunctions$GeometryType
+de.securedimensions.geoxacml.function.GeometryFunctions$SRS
+de.securedimensions.geoxacml.function.GeometryFunctions$SRID
+de.securedimensions.geoxacml.function.GeometryFunctions$AsText
+de.securedimensions.geoxacml.function.TopologicalFunctions$RelateMatrix
 de.securedimensions.geoxacml.function.TopologicalFunctions$Relate
 de.securedimensions.geoxacml.function.TopologicalFunctions$Equals
 de.securedimensions.geoxacml.function.TopologicalFunctions$Disjoint
@@ -25,3 +30,4 @@ de.securedimensions.geoxacml.function.BagSetFunctions$AtLeastOneMemberOf
 de.securedimensions.geoxacml.function.BagSetFunctions$Union
 de.securedimensions.geoxacml.function.BagSetFunctions$Subset
 de.securedimensions.geoxacml.function.BagSetFunctions$SetEquals
+de.securedimensions.geoxacml.function.BagSetFunctions$GeometryFromBag

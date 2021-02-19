@@ -18,13 +18,36 @@
 
 package de.securedimensions.geoxacml.function;
 
+import org.ow2.authzforce.core.pdp.api.IndeterminateEvaluationException;
 import org.ow2.authzforce.core.pdp.api.func.FirstOrderBagFunctions;
+import org.ow2.authzforce.core.pdp.api.func.FirstOrderFunctionCall;
+import org.ow2.authzforce.core.pdp.api.func.SingleParameterTypedFirstOrderFunction;
 import org.ow2.authzforce.core.pdp.api.value.AttributeDatatype;
 import org.ow2.authzforce.core.pdp.api.value.AttributeValue;
 import org.ow2.authzforce.core.pdp.api.value.Bag;
 import org.ow2.authzforce.core.pdp.api.value.BagDatatype;
+import org.ow2.authzforce.core.pdp.api.value.Datatype;
+import org.ow2.authzforce.xacml.identifiers.XacmlStatusCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.*;
+
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.ow2.authzforce.core.pdp.api.HashCollections;
+import org.ow2.authzforce.core.pdp.api.expression.Expression;
+import org.ow2.authzforce.core.pdp.api.func.BaseFirstOrderFunctionCall.EagerBagEval;
+import org.ow2.authzforce.core.pdp.api.func.BaseFirstOrderFunctionCall.EagerPartlyBagEval;
+import org.ow2.authzforce.core.pdp.api.func.BaseFirstOrderFunctionCall.EagerSinglePrimitiveTypeEval;
+import org.ow2.authzforce.core.pdp.api.value.Bags;
+import org.ow2.authzforce.core.pdp.api.value.BooleanValue;
+import org.ow2.authzforce.core.pdp.api.value.IntegerValue;
+import org.ow2.authzforce.core.pdp.api.value.StandardDatatypes;
+import org.ow2.authzforce.core.pdp.api.value.Value;
+
+import com.google.common.collect.Sets;
 
 import de.securedimensions.geoxacml.datatype.GeometryValue;
 
@@ -50,6 +73,49 @@ public class BagSetFunctions {
 	final static Class<GeometryValue[]> paramArrayClassX = DATATYPEX.getArrayClass();
 	
 	
+    public static class GeometryFromBag<AV extends GeometryValue> extends SingleParameterTypedFirstOrderFunction<AV, Bag<AV>>
+    {
+            /**
+             * Function ID for 'urn:ogc:def:function:geoxacml:3.0:geometry-from-bag' function
+             */
+    	public static final String ID = "urn:ogc:def:function:geoxacml:3.0:geometry-from-bag";
+
+            /**
+             * Constructor
+             * 
+             * @param paramType
+             *            bag's primitive datatype
+             * @param paramBagType
+             *            bag datatype
+             */
+            public GeometryFromBag(final Datatype<AV> paramType, final BagDatatype<AV> paramBagType)
+            {
+                    super(ID, paramType, true, Collections.singletonList(paramBagType));
+            }
+
+            @Override
+            public FirstOrderFunctionCall<AV> newCall(final List<Expression<?>> argExpressions, final Datatype<?>... remainingArgTypes) throws IllegalArgumentException
+            {
+                    return new EagerBagEval<>(functionSignature, argExpressions)
+                    {
+
+                            @Override
+                            protected final AV evaluate(final Bag<AV>[] bagArgs) throws IndeterminateEvaluationException
+                            {
+                            	ArrayList<Geometry> geometries = new ArrayList<>(bagArgs[0].size());
+                            		
+                            	Iterator<AV> i = bagArgs[0].iterator();
+                            	
+                            	while (i.hasNext())
+                            		geometries.add(i.next().getUnderlyingValue());
+                            		
+                            	return (AV) GeometryValue.FACTORY.getInstance(geometries);
+                            }
+                    };
+            }
+
+    }
+
 	public static class SingletonBagToPrimitive extends FirstOrderBagFunctions.SingletonBagToPrimitive<GeometryValue>
 	{
 
