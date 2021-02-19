@@ -2,9 +2,29 @@
 <pdpPropertiesUpdate xmlns="http://authzforce.github.io/rest-api-model/xmlns/authz/5">
   <feature type="urn:ow2:authzforce:feature-type:pdp:core" enabled="true"
     >urn:ow2:authzforce:feature:pdp:core:xpath-eval</feature>
+  <feature type="urn:ow2:authzforce:feature-type:pdp:request-preproc" enabled="true"
+    >urn:ow2:authzforce:feature:pdp:request-preproc:xacml-xml:default-lax</feature>
+ <feature type="urn:ow2:authzforce:feature-type:pdp:request-preproc" enabled="false"
+    >urn:ow2:authzforce:feature:pdp:request-preproc:xacml-xml:default-strict</feature>
   <!-- GeoXACML data type -->
   <feature type="urn:ow2:authzforce:feature-type:pdp:data-type" enabled="true"
     >urn:ogc:def:dataType:geoxacml:1.0:geometry</feature>
+  <!-- GeoXACML Creation Functions -->
+  <feature type="urn:ow2:authzforce:feature-type:pdp:function" enabled="true"
+    >urn:ogc:def:function:geoxacml:3.0:geometry-from-string</feature>
+  <!-- GeoXACML Validation Functions -->
+  <feature type="urn:ow2:authzforce:feature-type:pdp:function" enabled="true"
+    >urn:ogc:def:function:geoxacml:1.0:geometry-is-simple</feature>
+  <feature type="urn:ow2:authzforce:feature-type:pdp:function" enabled="true"
+    >urn:ogc:def:function:geoxacml:1.0:geometry-is-valid</feature>
+  <feature type="urn:ow2:authzforce:feature-type:pdp:function" enabled="true"
+    >urn:ogc:def:function:geoxacml:1.0:geometry-is-empty</feature>
+  <feature type="urn:ow2:authzforce:feature-type:pdp:function" enabled="true"
+    >urn:ogc:def:function:geoxacml:1.0:geometry-is-closed</feature>
+  <feature type="urn:ow2:authzforce:feature-type:pdp:function" enabled="true"
+    >urn:ogc:def:function:geoxacml:1.0:geometry-is-rectangle</feature>
+  <feature type="urn:ow2:authzforce:feature-type:pdp:function" enabled="true"
+    >urn:ogc:def:function:geoxacml:1.0:geometry-is-null</feature>  
   <!-- GeoXACML Topological Functions -->
   <feature type="urn:ow2:authzforce:feature-type:pdp:function" enabled="true"
     >urn:ogc:def:function:geoxacml:1.0:geometry-equals</feature>
@@ -43,5 +63,5 @@
   <feature type="urn:ow2:authzforce:feature-type:pdp:function" enabled="true"
     >urn:ogc:def:function:geoxacml:1.0:geometry-set-equals</feature>
   <!-- PDP default policy that can be updated later -->
-   <rootPolicyRefExpression>root</rootPolicyRefExpression>
+  <rootPolicyRefExpression>root</rootPolicyRefExpression>
 </pdpPropertiesUpdate>

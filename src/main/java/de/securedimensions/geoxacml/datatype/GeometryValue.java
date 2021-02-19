@@ -43,8 +43,8 @@ import javax.xml.transform.stream.StreamResult;
 import org.ow2.authzforce.core.pdp.api.value.AttributeDatatype;
 import org.ow2.authzforce.core.pdp.api.value.BaseAttributeValueFactory;
 import org.ow2.authzforce.core.pdp.api.value.SimpleValue;
-
-import org.w3c.dom.Node;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.wololo.jts2geojson.GeoJSONReader;
 import org.xml.sax.SAXException;
 
@@ -53,8 +53,10 @@ import de.securedimensions.geoxacml.io.gml3.GMLWriter;
 
 import net.sf.saxon.s9api.XPathCompiler;
 
+import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
@@ -90,6 +92,9 @@ public final class GeometryValue extends SimpleValue<Geometry>
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(GeometryValue.class);
 
+	public static final String DEFAULT_SRS = "urn:ogc:def:crs:OGC::CRS84";
+	public static final int DEAFAULT_QUADRANT_SEGMENTS = 50;
+	
 	/**
 	 * Data type Geometry
 	 */
@@ -133,13 +138,14 @@ public final class GeometryValue extends SimpleValue<Geometry>
 				Geometry g = null;
 				// container to keep all the metadata for the Geometry
 				WKTReader wktReader = new WKTReader(gf);
-				String crsName = null;
+				String srsName = null;
 
 				if(encoding.isEmpty())
 				{
-					// The empty string is represented by an empty GeometryCollection
-					g = wktReader.read("GEOMETRYCOLLECTION EMPTY");
-					
+					LOGGER.error("Geometry encoding via String must not be empty");
+					throw new IllegalArgumentException("Geometry encoding via String must not be empty");
+				}
+			
 					// to be GML:Null compatible, we add a nullReason
 					/* Null Reason per GML schema
 				    -	inapplicable 	there is no value
@@ -149,47 +155,52 @@ public final class GeometryValue extends SimpleValue<Geometry>
 					-	withheld 		the value is not divulged
 					-	other:text 		other brief explanation, where text is a string of two or more characters with no included spaces
 					 */
-					g.setUserData("inapplicable");
-					g.setSRID(0);
-				}
-				else if(
-						(encoding.substring(0, "SRID=".length()).equalsIgnoreCase("SRID=")) ||
-						(encoding.substring(0, "CRS=".length()).equalsIgnoreCase("CRS=")))
+
+				if(encoding.substring(0, "SRID=".length()).equalsIgnoreCase("SRID="))
 				{
 					String[] st = encoding.split(";");
 					
 					if (st.length != 2)
 					{
-						throw new IllegalArgumentException("EWKT syntax error: ';' missing?");
+						throw new IllegalArgumentException("extended WKT syntax error: ';' missing?");
 					}
 						
-					g = wktReader.read(st[1]);
-					
-					if (encoding.substring(0, "SRID=".length()).equalsIgnoreCase("SRID="))
+					if ((st[1].length() >= "CIRCLE".length()) && st[1].substring(0, "CIRCLE".length()).equalsIgnoreCase("CIRCLE"))
 					{
-						crsName = "EPSG:" + st[0].substring("SRID=".length());
-					}
-					else if (encoding.substring(0, "CRS=".length()).equalsIgnoreCase("CRS="))
-					{
-						crsName = st[0].substring("CRS=".length());
+						g = parseCircle(gf, st[1]);
 					}
 					else
-						throw new IllegalArgumentException("Geometry based on WKT without SRID or CRS cannot be instantiated");
-
-					g.setSRID(getSRID(crsName));
-					g.setUserData(null);
-				}				
-				else if(
-						encoding.substring(0, "NULL".length()).equalsIgnoreCase("NULL")
-						)
-				{
-					// Encoding NULL<space>null reason
-					final String nullReason = encoding.substring("NULL ".length());
+					{
+						g = wktReader.read(st[1]);
+					}
+					srsName = "EPSG:" + st[0].substring("SRID=".length());
 					
-					// The Null geometry is represented by an empty Point
-					g = gf.createPoint();
-					g.setSRID(0);
-					g.setUserData(nullReason);
+					g.setSRID(getSRID(srsName));
+					g.setUserData(new GeometryMetadata(srsName));
+				}
+				else if(encoding.substring(0, "SRS=".length()).equalsIgnoreCase("SRS="))
+				{
+					String[] st = encoding.split(";");
+					
+					if (st.length != 2)
+					{
+						throw new IllegalArgumentException("extended WKT syntax error: ';' missing?");
+					}
+						
+					if ((st[1].length() >= "CIRCLE".length()) && st[1].substring(0, "CIRCLE".length()).equalsIgnoreCase("CIRCLE"))
+					{
+						g = parseCircle(gf, st[1]);
+					}
+					else
+					{
+						g = wktReader.read(st[1]);
+					}					
+					srsName = st[0].substring("SRS=".length());
+					
+					g.setSRID(getSRID(srsName));
+					g.setUserData(new GeometryMetadata(srsName));
+					
+					srsName = st[0].substring("SRS=".length());
 				}
 				else if(
 						((encoding.length() >= "POINT".length()) && encoding.substring(0, "POINT".length()).equalsIgnoreCase("POINT")) ||
@@ -203,27 +214,51 @@ public final class GeometryValue extends SimpleValue<Geometry>
 					)
 				{
 					if (otherXmlAttributes == null)
-						throw new IllegalArgumentException("WKT geometry requires CRS definition as attribute in AttributeValue!");
+					{
+						LOGGER.info("Constructing geometry with default SRS: " + DEFAULT_SRS);
+						srsName = DEFAULT_SRS;
+					}
+					else
+					{
+				
+						LOGGER.debug("otherXmlAttributes: " + otherXmlAttributes);
 					
-					LOGGER.debug("otherXmlAttributes: " + otherXmlAttributes);
+						QName srsAttr = new QName("http://www.opengis.net/geoxacml","srs");
+						srsName = otherXmlAttributes.get(srsAttr);
 					
-					QName crsAttr = new QName("http://www.opengis.net/geoxacml","crs");
-					crsName = otherXmlAttributes.get(crsAttr);
+						if (srsName == null)
+						{
+							LOGGER.info("Constructing geometry with default SRS: " + DEFAULT_SRS);
+							srsName = DEFAULT_SRS;
+						}
+					}
 					
-					if (crsName == null)
-						throw new IllegalArgumentException("WKT geometry encoding with no crs defined!");
-
+					
 					g = wktReader.read(encoding);
 					if (g.isEmpty())
 					{
 						g.setSRID(0);
-						g.setUserData("inapplicable");
+						g.setUserData(new GeometryMetadata(DEFAULT_SRS,"inapplicable"));
 					}
 					else
 					{
-						g.setSRID(getSRID(crsName));
-						g.setUserData(null);
+						g.setSRID(getSRID(srsName));
+						g.setUserData(new GeometryMetadata(srsName));
 					}
+				}
+				else if(encoding.substring(0, "NULL".length()).equalsIgnoreCase("NULL"))
+				{
+					// Encoding NULL<space>null reason
+					final String nullReason = encoding.substring("NULL ".length());
+					
+					// The Null geometry is represented by an empty Point
+					g = gf.createEmpty(0);
+					g.setSRID(0);
+					g.setUserData(new GeometryMetadata("NULL",nullReason));
+				}
+				else if(encoding.substring(0, "CIRCLE".length()).equalsIgnoreCase("CIRCLE"))
+				{
+					g = parseCircle(gf, encoding);
 				}
 				else if (encoding.substring(0, "{".length()).equalsIgnoreCase("{")) {
 					try
@@ -243,11 +278,11 @@ public final class GeometryValue extends SimpleValue<Geometry>
 						 */
 						// The internal code -4326 is used in the constructor to correct the axes order
 						g.setSRID(-4326);
-						g.setUserData(null);
+						g.setUserData(new GeometryMetadata(DEFAULT_SRS));
 					}
 					catch (RuntimeException e) {
 						e.printStackTrace();
-						throw new IllegalArgumentException("RuntimeException: " + e.getMessage());
+						throw new IllegalArgumentException(e.getMessage());
 					}
 				}
 				else
@@ -257,11 +292,11 @@ public final class GeometryValue extends SimpleValue<Geometry>
 			}
 			catch (ParseException e) {
 				e.printStackTrace();
-				throw new IllegalArgumentException("ParseException: " + e.getMessage());
+				throw new IllegalArgumentException(e.getMessage());
 			}
 			catch (RuntimeException e) {
 				e.printStackTrace();
-				throw new IllegalArgumentException("RuntimeException: " + e.getMessage());
+				throw new IllegalArgumentException(e.getMessage());
 			} 
 			
 		}
@@ -270,7 +305,7 @@ public final class GeometryValue extends SimpleValue<Geometry>
 		public GeometryValue getInstance(final List<Serializable> content, final Map<QName, String> otherXmlAttributes, final XPathCompiler xPathCompiler) throws IllegalArgumentException
 		{
 			Geometry g;
-			String crsName = null;
+			String srsName = null;
 				
 			LOGGER.debug("getInstance(List<Serializable> content)");
 			if (content == null)
@@ -281,49 +316,37 @@ public final class GeometryValue extends SimpleValue<Geometry>
 			try
 			{
 			
-				/*
-				 * If content is empty, e.g. <AttributeValue DataType="urn:ogc:def:dataType:geoxacml:1.0:geometry"/>, 
-				 * then the content is invalid
-				 */
 				final Iterator<?> contentIterator = content.iterator();
 				if (!contentIterator.hasNext())
 				{
-					throw new IllegalArgumentException("Invalid content for datatype '" + DATATYPE.getId() + "': empty");
+					/*
+					 * If content is empty, e.g. <AttributeValue DataType="urn:ogc:def:dataType:geoxacml:1.0:geometry"/>, 
+					 * then the content is invalid
+					 */
+					throw new IllegalArgumentException("Invalid content for XML encoded datatype '" + DATATYPE.getId() + "': empty");
 				}
-
-				/*
-				 * 2 possibilities:
-				 * 
-				 * 1) first item is Policy element
-				 * 
-				 * 2) first item is String (if there is some whitespace for instance before the XML tag), then one Policy,...
-				 */
-
-				/*
-				 * Tricky part: The content is supposed to be a GML encoded geometry
-				 */
+						
 				Object x = contentIterator.next();
-				if (x instanceof String)
+				if ((content.size() == 1) && (x instanceof String))
 				{
-					// In case whitespace is the first element, lets check for more content...
-					if (!contentIterator.hasNext())
-					{
-						// Strange but not sure this could happen. The actual getInstance(Serializable value, ...)
-						// should have caught this already...
-						LOGGER.debug("Geometry using String encoding");
-						return getInstance((String)x, otherXmlAttributes, null);
-					}
-					else
-					{
-						// In case there is more content behind the String, let's increase the pointer
-						x = contentIterator.next();
-					}
+					/*
+					 * The content may use WKT encoding <AttributeValue DataType="urn:ogc:def:dataType:geoxacml:1.0:geometry"/> 
+					 */
+					return getInstance((String)x, otherXmlAttributes, null);
 				}
-				 
-				// Test if the geometry has a GML encoding. Then, the node 'x' should be an implementation of Node...
-				if (x instanceof Node)
+				
+				do
 				{
-					Node gmlNode = (Node)x;
+					if (x instanceof Element)
+						break;
+					
+					x = contentIterator.next();
+				} while (contentIterator.hasNext());
+				
+				// Test if the geometry has a GML encoding. Then, the node 'x' should be an implementation of Node...
+				if (x instanceof Element)
+				{
+					Element gmlNode = (Element)x;
 					String name = gmlNode.getNodeName();
 					String namespace = gmlNode.getNamespaceURI();
 					LOGGER.debug("node name: {}", name);
@@ -332,10 +355,9 @@ public final class GeometryValue extends SimpleValue<Geometry>
 					// Dealing with GML Null geometries
 					if (gmlNode.getLocalName().equalsIgnoreCase("Null"))
 					{
-						// The Null geometry is represented by an empty Point
-						g = gf.createPoint();
-						g.setSRID(0);
-						g.setUserData(gmlNode.getTextContent());
+						// The Null geometry is represented by Empty
+						g = gf.createEmpty(0);
+						g.setUserData(new GeometryMetadata("NULL",gmlNode.getTextContent()));
 
 						return new GeometryValue(g);
 					}
@@ -357,7 +379,7 @@ public final class GeometryValue extends SimpleValue<Geometry>
 						g = gh.getGeometry();
 
 					}
-					else if (namespace.equalsIgnoreCase("http://www.opengis.net/gml/3.2"))
+					else if (namespace.equalsIgnoreCase("http://www.opengis.net/gml/3.2") || namespace.equalsIgnoreCase("http://www.opengis.net/gml/3.3"))
 					{
 						// GML3
 						SAXParser parser = fact.newSAXParser();
@@ -373,45 +395,55 @@ public final class GeometryValue extends SimpleValue<Geometry>
 						throw new IllegalArgumentException("Namespace is neither GML2 nor GML3");						
 					}
 	                
-					// We need to get the CRS name
-                    Node srsNode = gmlNode.getAttributes().getNamedItem("srsName");
-                    if (srsNode != null)
+					// We need to check for the SRS name
+					NamedNodeMap attributes = gmlNode.getAttributes();
+					for (int ix=0; ix < attributes.getLength(); ix++)
+					{
+						if (attributes.item(ix).getNodeName().contains("srsName"))
+						{
+							srsName = attributes.item(ix).getNodeValue().trim();
+							break;
+						}
+					}
+                    
+					if (srsName == null)
                     {
-            				crsName = srsNode.getNodeValue().trim();
-
-            				LOGGER.debug("crs from GML element: " + crsName);
+        				srsName = "urn:ogc:def:crs:OGC::CRS84";
+        				LOGGER.debug("srs set to default: " + srsName);
                     }
                     else
                     {
-                    		LOGGER.error("crs from GML element missing");
-                    		throw new IllegalArgumentException("crs from GML element missing");
+        				LOGGER.debug("srs from GML element: " + srsName);
                     }
                                         
-                    g.setSRID(getSRID(crsName));
-                    g.setUserData(null);
+                    g.setSRID(getSRID(srsName));
+                    g.setUserData(new GeometryMetadata(srsName));
 
-                    return new GeometryValue(g);
-	                    
 				}
 				else
 				{
 					throw new IllegalArgumentException("Unknown Geometry encoding");
 				}
+		            
+				return new GeometryValue(g);
+				
 			} catch (TransformerFactoryConfigurationError e) {
-				throw new IllegalArgumentException("TransformerFactoryConfigurationError: " + e.getMessage());
+				throw new IllegalArgumentException(e.getMessage());
 			} catch (RuntimeException e) {
-				throw new IllegalArgumentException("RuntimeException: " + e.getMessage());
+				throw new IllegalArgumentException(e.getMessage());
 			} catch (TransformerConfigurationException e) {
-				throw new IllegalArgumentException("TransformerFactoryConfigurationError: " + e.getMessage());
+				throw new IllegalArgumentException(e.getMessage());
 			} catch (TransformerException e) {
-				throw new IllegalArgumentException("TransformerException: " + e.getMessage());
+				throw new IllegalArgumentException(e.getMessage());
 			} catch (ParserConfigurationException e) {
-				throw new IllegalArgumentException("ParserConfigurationException: " + e.getMessage());
+				throw new IllegalArgumentException(e.getMessage());
 			} catch (SAXException e) {
-				throw new IllegalArgumentException("SAXException: " + e.getMessage());
+				throw new IllegalArgumentException(e.getMessage());
 			} catch (IOException e) {
-				throw new IllegalArgumentException("IOException: " + e.getMessage());
+				throw new IllegalArgumentException(e.getMessage());
 			} 
+
+
 		}
 	}
 		
@@ -431,19 +463,20 @@ public final class GeometryValue extends SimpleValue<Geometry>
 		/* 
 		 * GEOMETRY NORMALIZATION
 		 * 
-		 * In order to deal with the axis order confusion for code 4326 and be able to compare geometries independent of encoding,
-		 * this implementation normalizes all geometry encodings to LAT/LON using EASTING or NORTHING
-		 * So for example for a geometry encoded with 
-		 *  - 'EPSG:4326' will not be processed as this implementation ASSUMES that the axis order is LAT/LON
-		 *  - 'urn:ogc:def:crs:OGC::CRS84' (LON/LAT) will have the axis swapped to make it LAT/LON
-		 *  - '' (southing) will have the LAT value inverted
-		 *  - '' (westing) will have the LON value inverted
+		 * The EPSG registry defines LAT/LON using EASTING or NORTHING for code 4326.
+		 * Assuming that most geometry processing via ADRs use the GeoJSON encoding,
+		 * this implementation normalizes all geometry encodings for EPSG:4326 to the
+		 * SRS defined in GeoJSON:
+		 *  - SRS: urn:ogc:def:crs:OGC::CRS84
+		 *  - axis order: LON/LAT
+		 *  The SRID is set to -4326 to indicate the axis order to be inverse to the EPSG registry
 		 */
-		if (g.getSRID() == -4326)
+		if (g.getSRID() == 4326)
 		{
 			value.apply(new SwapAxesCoordinateFilter());
 			value.geometryChanged();
-			value.setSRID(4326);
+			value.setSRID(-4326);
+			((GeometryMetadata)g.getUserData()).setSRS("urn:ogc:def:crs:OGC::CRS84");
 		}
 
 		
@@ -497,6 +530,8 @@ public final class GeometryValue extends SimpleValue<Geometry>
 			return -4326;
 		else if (srsCode.equalsIgnoreCase("WGS84"))
 			return -4326;
+		else if (srsCode.equalsIgnoreCase("urn:ogc:def:crs:OGC::CRS84"))
+			return -4326;
 		else	
 		{
 			int srid = 0;
@@ -506,21 +541,64 @@ public final class GeometryValue extends SimpleValue<Geometry>
 			}
 			catch (NumberFormatException e)
 			{
-				throw new IllegalArgumentException("Unknown CRS: " + srsName);
+				throw new IllegalArgumentException("SRS format exception: " + srsName);
 			}
 		}
 	}
 
+	private static Geometry parseCircle(GeometryFactory gf, String encoding)
+	{
+		String circle = encoding.substring("CIRCLE(".length(), encoding.length() - 1);
+		
+		// Encoding CIRCLE(X Y,r) or CIRCLE(X Y Z,r)
+		String[] st = circle.split(",");
+		if (st.length != 2)
+			throw new IllegalArgumentException("extended WKT syntax error for CIRCLE: Not in format CIRCLE(X Y,r)?");
+		
+		double r = Double.parseDouble(st[1].trim());
+		 
+		Point center;
+		String[] ct = st[0].split(" ");
+		if (ct.length == 2)
+		{
+			double x = Double.parseDouble(ct[0]);
+			double y = Double.parseDouble(ct[1]);
+			center = gf.createPoint(new Coordinate(x,y));
+		}
+		else if (ct.length == 3)
+		{	
+			double x = Double.parseDouble(ct[0]);
+			double y = Double.parseDouble(ct[1]);
+			double z = Double.parseDouble(ct[2]);
+			center = gf.createPoint(new Coordinate(x,y,z));
+		}
+		else
+			throw new IllegalArgumentException("extended WKT syntax error for CIRCLE: Not in format CIRCLE(X Y,r) or CIRCLE(X Y Z,r)?");
+
+		center.setSRID(-4326);
+		center.setUserData(new GeometryMetadata(DEFAULT_SRS));
+		
+		// The Circle geometry is represented by a Buffer
+		Geometry g = center.buffer(r, DEAFAULT_QUADRANT_SEGMENTS);
+		g.setSRID(-4326);
+		g.setUserData(new GeometryMetadata(DEFAULT_SRS));
+		
+		return g;
+
+	}
+	
 	/** {@inheritDoc} */
 	@Override
 	public String printXML()
 	{
 		final Geometry g = this.getUnderlyingValue();
 
+		GeometryMetadata gm = (GeometryMetadata) g.getUserData();
+		
 		// GML3
 		GMLWriter writer = new GMLWriter();
 		writer.setNamespace(true);
-		writer.setSrsName("EPSG:" + g.getSRID());
+		writer.setSrsName(gm.getSRS());
 		return writer.write(g);
 	}
 
@@ -531,8 +609,11 @@ public final class GeometryValue extends SimpleValue<Geometry>
 		WKTWriter wkt = new WKTWriter();
 		
 		final Geometry g = this.getUnderlyingValue();
-
-		return "SRID=" + String.valueOf(g.getSRID()) + ";" + wkt.write(g);
+		
+		GeometryMetadata gm = (GeometryMetadata) g.getUserData();
+		
+		return "SRS=" + gm.getSRS() + ";" + wkt.write(g);
+		
 	}
 	
 	@Override

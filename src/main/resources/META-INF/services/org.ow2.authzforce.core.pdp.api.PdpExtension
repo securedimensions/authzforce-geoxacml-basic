@@ -1,4 +1,13 @@
 de.securedimensions.geoxacml.datatype.GeometryValue$Factory
+de.securedimensions.geoxacml.function.GeometryFunctions$IsSimple
+de.securedimensions.geoxacml.function.GeometryFunctions$IsValid
+de.securedimensions.geoxacml.function.GeometryFunctions$IsEmpty
+de.securedimensions.geoxacml.function.GeometryFunctions$IsClosed
+de.securedimensions.geoxacml.function.GeometryFunctions$IsRectangle
+de.securedimensions.geoxacml.function.GeometryFunctions$IsNull
+de.securedimensions.geoxacml.function.GeometryFunctions$FromString
+de.securedimensions.geoxacml.function.TopologicalFunctions$Relates
+de.securedimensions.geoxacml.function.TopologicalFunctions$Relate
 de.securedimensions.geoxacml.function.TopologicalFunctions$Equals
 de.securedimensions.geoxacml.function.TopologicalFunctions$Disjoint
 de.securedimensions.geoxacml.function.TopologicalFunctions$Touches

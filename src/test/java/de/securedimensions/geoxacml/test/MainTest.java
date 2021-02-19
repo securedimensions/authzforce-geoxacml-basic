@@ -10,14 +10,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.securedimensions.geoxacml.test.datatype.GeometryAttributeTest;
-
+import de.securedimensions.geoxacml.test.function.GeometryCreationTest;
+import de.securedimensions.geoxacml.test.function.GeometryToplogyTest;
 /**
  * 
  * Main GeoXACML3 core implementation test suite.
  * 
  */
 @RunWith(Suite.class)
-@SuiteClasses(value = { GeometryAttributeTest.class })
+@SuiteClasses(value = { GeometryAttributeTest.class, GeometryCreationTest.class, GeometryToplogyTest.class })
 public class MainTest
 {
 	/**

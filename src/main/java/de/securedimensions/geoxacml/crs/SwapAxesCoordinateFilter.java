@@ -32,6 +32,8 @@ public class SwapAxesCoordinateFilter implements CoordinateFilter
 {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SwapAxesCoordinateFilter.class);
 
+	private double tmp;
+	
 	public SwapAxesCoordinateFilter()
 	{
 		super();
@@ -39,9 +41,9 @@ public class SwapAxesCoordinateFilter implements CoordinateFilter
 	
 	@Override
 	public void filter(Coordinate coord) {
-		double tmp = coord.y;
+		this.tmp = coord.y;
 		coord.y = coord.x;
-		coord.x = tmp;
+		coord.x = this.tmp;
 	}
 	
 	public boolean isDone() {
