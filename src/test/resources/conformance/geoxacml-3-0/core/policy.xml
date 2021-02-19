@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xacml3:PolicySet xmlns:xacml3="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17 http://docs.oasis-open.org/xacml/3.0/xacml-core-v3-schema-wd-17.xsd"
+    PolicySetId="urn:ogc:geoxacml:3.0:conformance-test:core:policy-set:geometry-encoding"
+    PolicyCombiningAlgId="urn:oasis:names:tc:xacml:3.0:policy-combining-algorithm:deny-overrides"
+    xmlns:geoxacml="http://www.opengis.net/geoxacml" Version="1">
+    <xacml3:Target/>
+    <xacml3:Policy PolicyId="urn:ogc:geoxacml:3.0:conformance-test:core:policy:geometry-encoding"
+        RuleCombiningAlgId="urn:oasis:names:tc:xacml:3.0:rule-combining-algorithm:permit-overrides"
+        Version="1.0">
+        <xacml3:Description>This policy illustrates the GeoXACML3 options to construct a geometry</xacml3:Description>
+        <xacml3:Target>
+            <xacml3:AnyOf>
+                <xacml3:AllOf>
+                    <xacml3:Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                        <xacml3:AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string"
+                            >geometry-encoding</xacml3:AttributeValue>
+                        <xacml3:AttributeDesignator
+                            Category="urn:oasis:names:tc:xacml:3.0:attribute-category:environment"
+                            AttributeId="urn:de:securedimensions:geoxacml:3.0:test-case"
+                            DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="true"
+                        />
+                    </xacml3:Match>
+                </xacml3:AllOf>
+            </xacml3:AnyOf>
+        </xacml3:Target>
+        <!-- WKT encoding requires the definition of a DEFAULT CRS -->
+        <xacml3:VariableDefinition VariableId="WKT+Deafault-CRS">
+            <xacml3:AttributeValue DataType="urn:ogc:def:dataType:geoxacml:1.0:geometry"
+                >POINT(-77.035278 38.889444)</xacml3:AttributeValue>
+        </xacml3:VariableDefinition>
+        <!-- WKT with SRS definition as AttributeValue attribute -->
+        <xacml3:VariableDefinition VariableId="WKT+SRS">
+            <xacml3:AttributeValue DataType="urn:ogc:def:dataType:geoxacml:1.0:geometry"
+                geoxacml:srs="EPSG:4326">POINT(-77.035278 38.889444)</xacml3:AttributeValue>
+        </xacml3:VariableDefinition>
+        <!-- extended WKT with SRID-->
+        <xacml3:VariableDefinition VariableId="eWKT">
+            <xacml3:AttributeValue DataType="urn:ogc:def:dataType:geoxacml:1.0:geometry"
+                >SRID=4326;POINT(38.889444 -77.035278)</xacml3:AttributeValue>
+        </xacml3:VariableDefinition>
+        <!-- extended WKT with SRS-->
+        <xacml3:VariableDefinition VariableId="xWKT">
+            <xacml3:AttributeValue DataType="urn:ogc:def:dataType:geoxacml:1.0:geometry"
+                >SRS=EPSG:4326;POINT(-77.035278 38.889444)</xacml3:AttributeValue>
+        </xacml3:VariableDefinition>
+        <!-- Geomrty from WKT String-->
+        <xacml3:VariableDefinition VariableId="geometry-from-string">
+            <xacml3:Apply FunctionId="urn:ogc:def:function:geoxacml:3.0:geometry-from-string">
+                <xacml3:AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string"
+                    >SRS=EPSG:4326;POINT(-77.035278 38.889444)</xacml3:AttributeValue>
+            </xacml3:Apply>
+        </xacml3:VariableDefinition>
+        <!-- Bag of Geometry-->
+        <xacml3:VariableDefinition VariableId="geometry-bag">
+            <xacml3:Apply FunctionId="urn:ogc:def:function:geoxacml:1.0:geometry-bag">
+                <xacml3:AttributeValue DataType="urn:ogc:def:dataType:geoxacml:1.0:geometry"
+                    >POINT(-77.035278 38.889444)</xacml3:AttributeValue>
+                <xacml3:AttributeValue DataType="urn:ogc:def:dataType:geoxacml:1.0:geometry"
+                    >SRID=4326;POINT(38.889444 -77.035278)</xacml3:AttributeValue>
+                <xacml3:AttributeValue DataType="urn:ogc:def:dataType:geoxacml:1.0:geometry"
+                    >SRS=EPSG:4326;POINT(-77.035278 38.889444)</xacml3:AttributeValue>
+            </xacml3:Apply>
+        </xacml3:VariableDefinition>
+    </xacml3:Policy>
+    <xacml3:Policy PolicyId="urn:ogc:geoxacml:3.0:conformance-test:core:policy:geometry-validation"
+        RuleCombiningAlgId="urn:oasis:names:tc:xacml:3.0:rule-combining-algorithm:permit-overrides"
+        Version="1.0">
+        <xacml3:Target>
+            <xacml3:AnyOf>
+                <xacml3:AllOf>
+                    <xacml3:Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                        <xacml3:AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string"
+                            >geometry-validation</xacml3:AttributeValue>
+                        <xacml3:AttributeDesignator
+                            Category="urn:oasis:names:tc:xacml:3.0:attribute-category:environment"
+                            AttributeId="urn:de:securedimensions:geoxacml:3.0:test-case"
+                            DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="true"
+                        />
+                    </xacml3:Match>
+                </xacml3:AllOf>
+            </xacml3:AnyOf>
+        </xacml3:Target>
+        <xacml3:Rule RuleId="urn:ogc:geoxacml:3.0:conformance-test:core:rule:geometry-is-valid"
+            Effect="Permit">
+            <xacml3:Target>
+                <xacml3:AnyOf>
+                    <xacml3:AllOf>
+                        <xacml3:Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                            <xacml3:AttributeValue
+                                DataType="http://www.w3.org/2001/XMLSchema#string"
+                                >geometry-is-valid</xacml3:AttributeValue>
+                            <xacml3:AttributeDesignator
+                                Category="urn:oasis:names:tc:xacml:3.0:attribute-category:environment"
+                                AttributeId="urn:de:securedimensions:geoxacml:3.0:test-name"
+                                DataType="http://www.w3.org/2001/XMLSchema#string"
+                                MustBePresent="true"/>
+                        </xacml3:Match>
+                    </xacml3:AllOf>
+                </xacml3:AnyOf>
+            </xacml3:Target>
+            <xacml3:Condition>
+                <xacml3:Apply FunctionId="urn:ogc:def:function:geoxacml:1.0:geometry-is-valid">
+                    <xacml3:Apply
+                        FunctionId="urn:ogc:def:function:geoxacml:1.0:geometry-one-and-only">
+                        <xacml3:AttributeDesignator
+                            Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
+                            AttributeId="urn:ogc:geoxacml:3.0:conformance-test:core:geometry-to-test"
+                            DataType="urn:ogc:def:dataType:geoxacml:1.0:geometry"
+                            MustBePresent="true"/>
+                    </xacml3:Apply>
+                </xacml3:Apply>
+            </xacml3:Condition>
+        </xacml3:Rule>
+        <xacml3:Rule RuleId="urn:ogc:geoxacml:3.0:conformance-test:core:rule:geometry-bag-is-valid"
+            Effect="Permit">
+            <xacml3:Target>
+                <xacml3:AnyOf>
+                    <xacml3:AllOf>
+                        <xacml3:Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                            <xacml3:AttributeValue
+                                DataType="http://www.w3.org/2001/XMLSchema#string"
+                                >geometry-bag-is-valid</xacml3:AttributeValue>
+                            <xacml3:AttributeDesignator
+                                Category="urn:oasis:names:tc:xacml:3.0:attribute-category:environment"
+                                AttributeId="urn:de:securedimensions:geoxacml:3.0:test-name"
+                                DataType="http://www.w3.org/2001/XMLSchema#string"
+                                MustBePresent="true"/>
+                        </xacml3:Match>
+                    </xacml3:AllOf>
+                </xacml3:AnyOf>
+            </xacml3:Target>
+            <xacml3:Condition>
+                <xacml3:Apply FunctionId="urn:oasis:names:tc:xacml:3.0:function:any-of">
+                    <xacml3:Function
+                        FunctionId="urn:ogc:def:function:geoxacml:1.0:geometry-is-valid"/>
+                    <xacml3:AttributeDesignator
+                        Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
+                        AttributeId="urn:ogc:geoxacml:3.0:conformance-test:core:geometry-to-test"
+                        DataType="urn:ogc:def:dataType:geoxacml:1.0:geometry" MustBePresent="true"/>
+                </xacml3:Apply>
+            </xacml3:Condition>
+        </xacml3:Rule>
+    </xacml3:Policy>
+</xacml3:PolicySet>

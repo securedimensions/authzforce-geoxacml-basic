@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Request xmlns="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17" ReturnPolicyIdList="false"
+    CombinedDecision="false" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17 
+    http://docs.oasis-open.org/xacml/3.0/xacml-core-v3-schema-wd-17.xsd">
+    <Attributes Category="urn:oasis:names:tc:xacml:3.0:attribute-category:environment">
+        <Attribute AttributeId="urn:de:securedimensions:geoxacml:3.0:test-case"
+            IncludeInResult="true">
+            <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string"
+                >geometry-validation</AttributeValue>
+        </Attribute>
+        <Attribute AttributeId="urn:de:securedimensions:geoxacml:3.0:test-name"
+            IncludeInResult="true">
+            <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string"
+                >geometry-is-valid</AttributeValue>
+        </Attribute>
+    </Attributes>
+    <Attributes Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource">
+        <Attribute AttributeId="urn:ogc:geoxacml:3.0:conformance-test:core:geometry-to-test"
+            IncludeInResult="true">
+            <AttributeValue DataType="urn:ogc:def:dataType:geoxacml:1.0:geometry"
+                >SRS=urn:ogc:def:crs:OGC::CRS84;POINT(-77.035278 38.889444)</AttributeValue>
+        </Attribute>
+    </Attributes>
+</Request>

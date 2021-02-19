@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pdpPropertiesUpdate xmlns="http://authzforce.github.io/rest-api-model/xmlns/authz/5">
+	<!-- PDP policy for GeoXACML 3.0 conformance testing -->
+    <rootPolicyRefExpression>urn:ogc:geoxacml:3.0:conformance-test:core:policy-set:geometry-encoding</rootPolicyRefExpression>
+</pdpPropertiesUpdate>

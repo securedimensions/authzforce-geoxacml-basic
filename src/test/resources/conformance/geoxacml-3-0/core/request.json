@@ -1,0 +1,80 @@
+{
+    "Request": {
+        "ReturnPolicyIdList": false,
+        "CombinedDecision": false,
+        "Category": [
+            {
+                "CategoryId": "urn:oasis:names:tc:xacml:1.0:subject-category:access-subject",
+                "Attribute": [
+                    {
+                        "IncludeInResult": false,
+                        "AttributeId": "urn:oasis:names:tc:xacml:1.0:subject:subject-id",
+                        "DataType": "http://www.w3.org/2001/XMLSchema#string",
+                        "Value": ["Julius Hibbert"]
+                    }
+                ]
+            },
+            {
+                "CategoryId": "urn:oasis:names:tc:xacml:3.0:attribute-category:resource",
+                "Attribute": [
+                    {
+                        "IncludeInResult": false,
+                        "AttributeId": "urn:oasis:names:tc:xacml:1.0:resource:resource-id",
+                        "DataType": "http://www.w3.org/2001/XMLSchema#anyURI",
+                        "Value": ["http://medico.com/record/patient/BartSimpson"]
+                    }
+                ]
+            },
+            {
+                "CategoryId": "urn:oasis:names:tc:xacml:3.0:attribute-category:action",
+                "Attribute": [
+                    {
+                        "IncludeInResult": false,
+                        "AttributeId": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+                        "DataType": "http://www.w3.org/2001/XMLSchema#string",
+                        "Value": ["read"]
+                    }
+                ]
+            },
+            {
+                "CategoryId": "urn:oasis:names:tc:xacml:3.0:attribute-category:environment",
+                "Attribute": [
+                    {
+                        "IncludeInResult": false,
+                        "AttributeId": "urn:ogc:geoxacml:3.0:subject-location",
+                        "DataType": "urn:ogc:def:dataType:geoxacml:1.0:geometry",
+                        "Value": ["SRID=4326;POINT(38.889444 -77.035278)"]
+                    }
+                ]
+            },
+            {
+                "CategoryId": "urn:oasis:names:tc:xacml:3.0:attribute-category:environment",
+                "Attribute": [
+                    {
+                        "IncludeInResult": false,
+                        "AttributeId": "urn:ogc:geoxacml:3.0:subject-location",
+                        "DataType": "urn:ogc:def:dataType:geoxacml:1.0:geometry",
+                        "Value": ["SRID=4326;POINT(38.889444 -77.035278)","CRS=urn:ogc:def:crs:OGC::CRS84;POINT(-77.035278 38.889444)"]
+                    }
+                ]
+            },
+            {
+                "CategoryId": "urn:oasis:names:tc:xacml:3.0:attribute-category:environment",
+                "Attribute": [
+                    {
+                        "IncludeInResult": false,
+                        "AttributeId": "urn:ogc:geoxacml:3.0:resource-location",
+                        "DataType": "urn:ogc:def:dataType:geoxacml:1.0:geometry",
+                        "Value": ["SRID=4326;POINT(38.889444 -77.035278)"]
+                    },
+                    {
+                        "IncludeInResult": false,
+                        "AttributeId": "urn:ogc:geoxacml:3.0:resource-location",
+                        "DataType": "urn:ogc:def:dataType:geoxacml:1.0:geometry",
+                        "Value": ["CRS=urn:ogc:def:crs:OGC::CRS84;POINT(-77.035278 38.889444)"]
+                    }
+                ]
+            }
+        ]
+    }
+}
