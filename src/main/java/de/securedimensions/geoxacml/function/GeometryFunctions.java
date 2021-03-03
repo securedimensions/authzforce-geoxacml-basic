@@ -331,7 +331,7 @@ public class GeometryFunctions {
 
 	public final static class SRID extends SingleParameterTypedFirstOrderFunction<IntegerValue, GeometryValue>
 	{
-		public static final String ID = "urn:ogc:def:function:geoxacml:3.0:geometry-dimension";
+		public static final String ID = "urn:ogc:def:function:geoxacml:3.0:geometry-srid";
 
 		public SRID()
 		{

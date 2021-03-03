@@ -7,7 +7,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -52,210 +52,209 @@ import com.google.common.collect.Sets;
 import de.securedimensions.geoxacml.datatype.GeometryValue;
 
 /**
- * 
+ *
  * @author Andreas Matheus, Secure Dimensions GmbH. 
  *
  */
 
-public class BagSetFunctions {
+public class BagSetFunctions
+{
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(GeometryValue.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GeometryValue.class);
 
-	public static final AttributeDatatype<GeometryValue> DATATYPEX = 
-			new AttributeDatatype<GeometryValue>(GeometryValue.class, "urn:ogc:def:dataType:geoxacml:1.0:geometry", "urn:ogc:def:function:geoxacml:1.0:geometry-bag");
+    public static final AttributeDatatype<GeometryValue> DATATYPEX =
+            new AttributeDatatype<GeometryValue>(GeometryValue.class, "urn:ogc:def:dataType:geoxacml:1.0:geometry", "urn:ogc:def:function:geoxacml:1.0:geometry-bag");
 
-	final static AttributeDatatype<GeometryValue> paramType = GeometryValue.FACTORY.getDatatype();
-	final static BagDatatype<GeometryValue> paramBagType = paramType.getBagDatatype();
-	final static Class<GeometryValue[]> paramArrayClass = paramType.getArrayClass();
-	
-	// For use in Intersection and Union
-	final static BagDatatype<GeometryValue> paramBagTypeX = DATATYPEX.getBagDatatype();
-	final static Class<GeometryValue[]> paramArrayClassX = DATATYPEX.getArrayClass();
-	
-	
-    public static class GeometryFromBag<AV extends GeometryValue> extends SingleParameterTypedFirstOrderFunction<AV, Bag<AV>>
+    final static AttributeDatatype<GeometryValue> paramType = GeometryValue.FACTORY.getDatatype();
+    final static BagDatatype<GeometryValue> paramBagType = paramType.getBagDatatype();
+    final static Class<GeometryValue[]> paramArrayClass = paramType.getArrayClass();
+
+    // For use in Intersection and Union
+    final static BagDatatype<GeometryValue> paramBagTypeX = DATATYPEX.getBagDatatype();
+    final static Class<GeometryValue[]> paramArrayClassX = DATATYPEX.getArrayClass();
+
+
+    public static class GeometryFromBag extends SingleParameterTypedFirstOrderFunction<GeometryValue, Bag<GeometryValue>>
     {
-            /**
-             * Function ID for 'urn:ogc:def:function:geoxacml:3.0:geometry-from-bag' function
-             */
-    	public static final String ID = "urn:ogc:def:function:geoxacml:3.0:geometry-from-bag";
+        /**
+         * Function ID for 'urn:ogc:def:function:geoxacml:3.0:geometry-from-bag' function
+         */
+        public static final String ID = "urn:ogc:def:function:geoxacml:3.0:geometry-from-bag";
 
-            /**
-             * Constructor
-             * 
-             * @param paramType
-             *            bag's primitive datatype
-             * @param paramBagType
-             *            bag datatype
-             */
-            public GeometryFromBag(final Datatype<AV> paramType, final BagDatatype<AV> paramBagType)
+        /**
+         * Constructor
+         *
+         */
+        public GeometryFromBag()
+        {
+            super(ID, GeometryValue.DATATYPE, true, Collections.singletonList(GeometryValue.DATATYPE.getBagDatatype()));
+        }
+
+        @Override
+        public FirstOrderFunctionCall<GeometryValue> newCall(final List<Expression<?>> argExpressions, final Datatype<?>... remainingArgTypes) throws IllegalArgumentException
+        {
+            return new EagerBagEval<>(functionSignature, argExpressions)
             {
-                    super(ID, paramType, true, Collections.singletonList(paramBagType));
-            }
 
-            @Override
-            public FirstOrderFunctionCall<AV> newCall(final List<Expression<?>> argExpressions, final Datatype<?>... remainingArgTypes) throws IllegalArgumentException
-            {
-                    return new EagerBagEval<>(functionSignature, argExpressions)
-                    {
+                @Override
+                protected final GeometryValue evaluate(final Bag<GeometryValue>[] bagArgs) throws IndeterminateEvaluationException
+                {
+                    ArrayList<Geometry> geometries = new ArrayList<>(bagArgs[0].size());
 
-                            @Override
-                            protected final AV evaluate(final Bag<AV>[] bagArgs) throws IndeterminateEvaluationException
-                            {
-                            	ArrayList<Geometry> geometries = new ArrayList<>(bagArgs[0].size());
-                            		
-                            	Iterator<AV> i = bagArgs[0].iterator();
-                            	
-                            	while (i.hasNext())
-                            		geometries.add(i.next().getUnderlyingValue());
-                            		
-                            	return (AV) GeometryValue.FACTORY.getInstance(geometries);
-                            }
-                    };
-            }
+                    Iterator<GeometryValue> i = bagArgs[0].iterator();
+
+					while (i.hasNext())
+					{
+						geometries.add(i.next().getUnderlyingValue());
+					}
+
+                    return GeometryValue.FACTORY.getInstance(geometries);
+                }
+            };
+        }
 
     }
 
-	public static class SingletonBagToPrimitive extends FirstOrderBagFunctions.SingletonBagToPrimitive<GeometryValue>
-	{
+    public static class SingletonBagToPrimitive extends FirstOrderBagFunctions.SingletonBagToPrimitive<GeometryValue>
+    {
 
-		/**
-		 * Function identifier
-		 * <li>{@code -one-and-only}: converts a given singleton bag to a the single primitive value in the bag</li>
-		 * public static final String ID = "urn:ogc:def:function:geoxacml:1.0:geometry-one-and-only";
-		 */
-		
-		public SingletonBagToPrimitive()
-		{
-			super(paramType, paramBagType);
-		}
-	}
-	
-	public static class BagSize extends FirstOrderBagFunctions.BagSize<GeometryValue>
-	{
-		/**
-		 * Function identifier
-		 * public static final String ID = "urn:ogc:def:function:geoxacml:1.0:geometry-bag-size";
-		 * <li>{@code -bag-size}: gives the size of a given bag</li>
-		 */
-		
-		public BagSize()
-		{
-			super(paramBagType);
-		}
+        /**
+         * Function identifier
+         * <li>{@code -one-and-only}: converts a given singleton bag to a the single primitive value in the bag</li>
+         * public static final String ID = "urn:ogc:def:function:geoxacml:1.0:geometry-one-and-only";
+         */
 
-	}
-	
-	public static class BagContains extends FirstOrderBagFunctions.BagContains<GeometryValue>
-	{
-		/**
-		 * Function identifier
-		 * public static final String ID = "urn:ogc:def:function:geoxacml:1.0:geometry-is-in";
-		 * <li>{@code -is-in}: tests whether the bag contains a given primitive value</li>
-		 */
-		
-		public BagContains()
-		{
-			super(paramType, paramBagType, paramArrayClass);
-		}
+        public SingletonBagToPrimitive()
+        {
+            super(paramType, paramBagType);
+        }
+    }
 
-		public static <V extends AttributeValue> boolean eval(final V arg0, final Bag<V> bag)
-		{
-			LOGGER.debug("eval function for Geometry datatype");
-			return bag.contains(arg0);
-		}
+    public static class BagSize extends FirstOrderBagFunctions.BagSize<GeometryValue>
+    {
+        /**
+         * Function identifier
+         * public static final String ID = "urn:ogc:def:function:geoxacml:1.0:geometry-bag-size";
+         * <li>{@code -bag-size}: gives the size of a given bag</li>
+         */
 
-	}
-	
-	public static class PrimitiveToBag extends FirstOrderBagFunctions.PrimitiveToBag<GeometryValue>
-	{
-		/**
-		 * Function identifier
-		 * public static final String ID = "urn:ogc:def:function:geoxacml:1.0:geometry-bag";
-		 * <li>{@code -bag}: creates a singleton bag from a given primitive value</li>
-		 */
-		
-		public PrimitiveToBag()
-		{
-			super(paramType, paramBagType);
-		}
+        public BagSize()
+        {
+            super(paramBagType);
+        }
 
-	}
+    }
+
+    public static class BagContains extends FirstOrderBagFunctions.BagContains<GeometryValue>
+    {
+        /**
+         * Function identifier
+         * public static final String ID = "urn:ogc:def:function:geoxacml:1.0:geometry-is-in";
+         * <li>{@code -is-in}: tests whether the bag contains a given primitive value</li>
+         */
+
+        public BagContains()
+        {
+            super(paramType, paramBagType, paramArrayClass);
+        }
+
+        public static <V extends AttributeValue> boolean eval(final V arg0, final Bag<V> bag)
+        {
+            LOGGER.debug("eval function for Geometry datatype");
+            return bag.contains(arg0);
+        }
+
+    }
+
+    public static class PrimitiveToBag extends FirstOrderBagFunctions.PrimitiveToBag<GeometryValue>
+    {
+        /**
+         * Function identifier
+         * public static final String ID = "urn:ogc:def:function:geoxacml:1.0:geometry-bag";
+         * <li>{@code -bag}: creates a singleton bag from a given primitive value</li>
+         */
+
+        public PrimitiveToBag()
+        {
+            super(paramType, paramBagType);
+        }
+
+    }
 
 
-	public static class AtLeastOneMemberOf extends FirstOrderBagFunctions.AtLeastOneMemberOf<GeometryValue>
-	{
-		/**
-		 * Function identifier
-		 * public static final String ID = "urn:ogc:def:function:geoxacml:1.0:geometry-at-least-one-member-of";
-		 * <li>{@code -at-least-one-member-of}: tests whether one of the values in a given bag is in another given bag</li>
-		 */
-		
-		public AtLeastOneMemberOf()
-		{
-			super(paramBagTypeX);
-		}
+    public static class AtLeastOneMemberOf extends FirstOrderBagFunctions.AtLeastOneMemberOf<GeometryValue>
+    {
+        /**
+         * Function identifier
+         * public static final String ID = "urn:ogc:def:function:geoxacml:1.0:geometry-at-least-one-member-of";
+         * <li>{@code -at-least-one-member-of}: tests whether one of the values in a given bag is in another given bag</li>
+         */
 
-	}
+        public AtLeastOneMemberOf()
+        {
+            super(paramBagTypeX);
+        }
 
-	public static class Intersection extends FirstOrderBagFunctions.Intersection<GeometryValue>
-	{
-		/**
-		 * Function identifier
-		 * public static final String ID = "urn:ogc:def:function:geoxacml:1.0:geometry-set-equals";
-		 * <li>{@code -set-equals}: tests whether bags are equal regardless of order</li>
-		 */
-		
-		public Intersection()
-		{
-			super(DATATYPEX, paramBagTypeX);
-		}
+    }
 
-	}
-	
-	public static class Union extends FirstOrderBagFunctions.Union<GeometryValue>
-	{
-		/**
-		 * Function identifier
-		 * public static final String ID = "urn:ogc:def:function:geoxacml:1.0:geometry-set-equals";
-		 * <li>{@code -set-equals}: tests whether bags are equal regardless of order</li>
-		 */
-		
-		public Union()
-		{
-			super(DATATYPEX, paramBagTypeX);
-		}
+    public static class Intersection extends FirstOrderBagFunctions.Intersection<GeometryValue>
+    {
+        /**
+         * Function identifier
+         * public static final String ID = "urn:ogc:def:function:geoxacml:1.0:geometry-set-equals";
+         * <li>{@code -set-equals}: tests whether bags are equal regardless of order</li>
+         */
 
-	}
+        public Intersection()
+        {
+            super(DATATYPEX, paramBagTypeX);
+        }
 
-	public static class Subset extends FirstOrderBagFunctions.Subset<GeometryValue>
-	{
-		/**
-		 * Function identifier
-		 * public static final String ID = "urn:ogc:def:function:geoxacml:1.0:geometry-subset";
-		 * <li>{@code -subset}: tests whether all values of a given bag are in another given bag</li>
-		 */
-		
-		public Subset()
-		{
-			super(paramBagTypeX);
-		}
+    }
 
-	}
+    public static class Union extends FirstOrderBagFunctions.Union<GeometryValue>
+    {
+        /**
+         * Function identifier
+         * public static final String ID = "urn:ogc:def:function:geoxacml:1.0:geometry-set-equals";
+         * <li>{@code -set-equals}: tests whether bags are equal regardless of order</li>
+         */
 
-	public static class SetEquals extends FirstOrderBagFunctions.SetEquals<GeometryValue>
-	{
-		/**
-		 * Function identifier
-		 * public static final String ID = "urn:ogc:def:function:geoxacml:1.0:geometry-set-equals";
-		 * <li>{@code -set-equals}: tests whether bags are equal regardless of order</li>
-		 */
-		
-		public SetEquals()
-		{
-			super(paramBagType);
-		}
+        public Union()
+        {
+            super(DATATYPEX, paramBagTypeX);
+        }
 
-	}
+    }
+
+    public static class Subset extends FirstOrderBagFunctions.Subset<GeometryValue>
+    {
+        /**
+         * Function identifier
+         * public static final String ID = "urn:ogc:def:function:geoxacml:1.0:geometry-subset";
+         * <li>{@code -subset}: tests whether all values of a given bag are in another given bag</li>
+         */
+
+        public Subset()
+        {
+            super(paramBagTypeX);
+        }
+
+    }
+
+    public static class SetEquals extends FirstOrderBagFunctions.SetEquals<GeometryValue>
+    {
+        /**
+         * Function identifier
+         * public static final String ID = "urn:ogc:def:function:geoxacml:1.0:geometry-set-equals";
+         * <li>{@code -set-equals}: tests whether bags are equal regardless of order</li>
+         */
+
+        public SetEquals()
+        {
+            super(paramBagType);
+        }
+
+    }
 
 }
