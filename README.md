@@ -1,5 +1,5 @@
 # Deprecation Note
-**This repository is no longer actively maintained as the Open Geospatial Consortium has relased the [GeoXACML 3.0](https://docs.ogc.org/is/22-049r1/22-049r1.html) and the [GeoXACML JSON Profile 1.0](https://docs.ogc.org/is/22-050r1/22-050r1.html) standards. Please use the corresponding implemenation from Github repository [authzforce-ce-geoxacml3](https://github.com/securedimensions/authzforce-ce-geoxacml3).**
+**This repository is no longer actively maintained as the Open Geospatial Consortium has released the [GeoXACML 3.0](https://docs.ogc.org/is/22-049r1/22-049r1.html) and the [GeoXACML JSON Profile 1.0](https://docs.ogc.org/is/22-050r1/22-050r1.html) standards. Please use the corresponding implementation from Github repository [authzforce-ce-geoxacml3](https://github.com/securedimensions/authzforce-ce-geoxacml3).**
 
 # GeoXACML 1.0 implementation for FIWARE AuthZForce PDP Community Version
 This implementation extends the FIWARE AuthZForce PDP implementation with a `Geometry` data type and related functions as specified in the OGC Implementation Standard [GeoXACML 1.0.1](http://portal.opengeospatial.org/files/?artifact_id=42734). We call a GeoXACML enhanced PDP a GeoPDP.
